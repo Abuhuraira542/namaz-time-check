@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Namaz-Timing</title>
+    <link rel="stylesheet" href="myfetch.css">
+</head>
+<body>
+    <div class="maincontainer0">
+        <div class="maincontent">
+    <h1>Namaz-Timing</h1>
+    <label for="cityname">
+        City:
+        <input type="text" id="cityuser">
+    </label>
+    <br>
+    <br>
+    <label for="Countryname">
+        Country:
+        <input type="text" id="Countryuser">
+    </label>
+    <br>
+    <button onclick="checkNamaztiming()">Check Timing</button>
+</div>
+    </div>  
+    <br>
+    <br>
+    <div class="maincontainer">
+        <div class="main">
+            <div class="">
+                <p class="timingshow">Date: <span id="date"></span></p>
+            </div>
+            <div class="container1">
+                <div class="timingcard">
+                    <p class="timingtext">Fajr: <span id="fajr"></span></p>
+                </div>
+                <div class="timingcard">
+                    <p class="timingtext">Zuhr: <span id="Zuhr"></span></p>
+                </div>
+            </div>
+            <div class="container1">
+                <div class="timingcard">
+                    <p class="timingtext">Asr: <span id="Asr"></span></p>
+                </div>
+                <div class="timingcard">
+                    <p class="timingtext">Magraib: <span id="Magraib"></span></p>
+                </div>
+            </div>
+            <div class="container1">
+                <div class="timingcard">
+                    <p class="timingtext">Isha: <span id="Isha"></span></p>
+                </div>
+                <div class="timingcard">
+                    <p class="timingtext">Sunrise: <span id="Sunrise"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function timeConverter(value){
+            let splittedTime = value.split(":");
+            if(splittedTime[0] > 12){
+                let convertedHour = splittedTime[0] - 12;
+                return `${convertedHour}:${splittedTime[1]} PM`
+            }else if(splittedTime[0] == 12){
+                return `${value} PM`
+            }else{
+                return `${value} AM`
+            }
+        }
+
+        function checkNamazTiming(){
+            let city = document.getElementById("cityName").value
+            let country = document.getElementById("countryName").value
+            axios.get(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=1`)
+            .then((res) => {
+                let timing = res.data.data
+                console.log("timing : ", timing)
+                document.querySelector("#fajr").innerText = timeConverter(timing.timings.Fajr);
+                document.querySelector("#zuhr").innerText = timeConverter(timing.timings.Dhuhr)
+                document.querySelector("#Asr").innerText = timeConverter(timing.timings.Asr)
+                document.querySelector("#Magraib").innerText = timeConverter(timing.timings.Maghrib)
+                document.querySelector("#Isha").innerText = timeConverter(timing.timings.Isha)
+                document.querySelector("#sunrise").innerText = timeConverter(timing.timings.Sunrise)
+                document.querySelector("#date").innerText = `${timing.date.readable} (${timing.date.hijri.date} سَنَة هِجْرِيَّة)`
+                document.querySelector(".mainContainer").style.backgroundColor = "green"
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        }   
+    </script>
+</body>
+</html>
